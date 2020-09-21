@@ -19,6 +19,14 @@ namespace JantarDosFilosofos.Classes
         private bool abortSimulation;
         public double lastTimeHungry;
 
+        /// <summary>
+        /// Creates a new Philosopher class
+        /// </summary>
+        /// <param name="id">Identity of the philosopher</param>
+        /// <param name="forks">Forks this philosopher can reach</param>
+        /// <param name="stopwatch">Shared time with the other philosophers in the table</param>
+        /// <param name="timeThinking">Time in seconds this philosopher takes to think</param>
+        /// <param name="timeEating">Time in seconds this philosopher takes to eat</param>
         public Philosopher(int id, ref List<Fork> forks, ref Stopwatch stopwatch, double timeThinking = 0.01, double timeEating = 0.1)
         {
             this.id = id;
@@ -32,16 +40,28 @@ namespace JantarDosFilosofos.Classes
             _stopwatch = stopwatch;
         }
 
+        /// <summary>
+        /// Class that allows other classes to abort the simulation of this philosopher if a deadlock happens
+        /// </summary>
         public void AbortSimulation()
         {
             abortSimulation = true;
         }
+        
 
+        /// <summary>
+        /// Logs an action of the philosopher in the terminal
+        /// </summary>
+        /// <param name="str">Action of the philosopher</param>
         private void Log(string str)
         {
             Console.WriteLine($"{Math.Round(_stopwatch.Elapsed.TotalMilliseconds)}: Philosopher {id} {str}");
         }
 
+        /// <summary>
+        /// Starts a simulation of a philosopher
+        /// </summary>
+        /// <param name="startThinking">If this variabel is true, then the philosopher will start the simulation by thinking</param>
         public void Exist(bool startThinking = false)
         {
             Log("sits on the table");
@@ -69,13 +89,19 @@ namespace JantarDosFilosofos.Classes
             }
         }
 
-
+        /// <summary>
+        /// Philosopher thinks
+        /// </summary>
         public void Think()
         {
             Log($"is thinking");
             Thread.Sleep(timeThinking);
         }
 
+        /// <summary>
+        /// Philosopher tries to eat
+        /// </summary>
+        /// <returns>True if he was able to eat, false if he was not</returns>
         public bool Eat()
         {
             int neededForks = 2;
@@ -97,6 +123,9 @@ namespace JantarDosFilosofos.Classes
             return false;
         }
 
+        /// <summary>
+        /// Releases all forks the philosopher has in hands
+        /// </summary>
         public void ReleaseForks()
         {
             foreach (var fork in forksInHand)
@@ -107,16 +136,28 @@ namespace JantarDosFilosofos.Classes
             forksInHand.Clear();
         }
 
+        /// <summary>
+        /// Philosopher dies
+        /// </summary>
         public void Die()
         {
             Log($"was not able to eat and DIED");
+            AbortSimulation();
         }
 
+        /// <summary>
+        /// Returns if the philosopher is hungry and waiting for forks to eat
+        /// </summary>
+        /// <returns>True if the philosopher is hungry, false otherwise</returns>
         public bool IsHungry()
         {
             return hungry;
         }
-        
+
+        /// <summary>
+        /// Philosopher is hungry and keeps checking to see if enough forks are available in order for him to eat
+        /// </summary>
+        /// <returns>True if the philosopher was able to eat, false if the simulation was aborted</returns>
         public bool Hungry()
         {
             Log($"is hungry and waiting for forks");
@@ -142,7 +183,12 @@ namespace JantarDosFilosofos.Classes
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Tries to get a fork
+        /// </summary>
+        /// <param name="i">Id of the fork the philosopher tried to grab</param>
+        /// <returns>True if the philosopher was able to pick up the fork, false otherwise</returns>
         private bool GetFork(int i)
         {
             if (i < 0 || i >= forks.Count)

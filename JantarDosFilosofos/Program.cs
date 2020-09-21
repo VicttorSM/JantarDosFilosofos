@@ -5,6 +5,14 @@ namespace JantarDosFilosofos
 {
     class Program
     {
+        /// <summary>
+        /// Realiza testes sobre o tempo dos deadlocks em cada relação de tempos desde 10% até 100%
+        /// </summary>
+        /// <param name="fullFilePath">Caminho do arquivo que receberá os logs dos tempos</param>
+        /// <param name="universalFork">Diz se o garfo universal será implementado ou não</param>
+        /// <param name="qtdPhilosophers">Quantidade de filósofos</param>
+        /// <param name="qtdForks">Quantidade de garfos</param>
+        /// <param name="tComendo">Tempo que os filósofos levam para comer</param>
         static void RealizaTestes(string fullFilePath, bool universalFork = false, int qtdPhilosophers = 5, int qtdForks = 5, double tComendo = 1)
         {
             for (double i = 0.1; i <= 1; i += 0.1)
