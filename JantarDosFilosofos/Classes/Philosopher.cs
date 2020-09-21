@@ -15,6 +15,9 @@ namespace JantarDosFilosofos.Classes
         private List<Fork> forks;
         private List<Fork> forksInHand;
         private Stopwatch _stopwatch;
+        private bool hungry;
+        private bool abortSimulation;
+        public double lastTimeHungry;
 
         public Philosopher(int id, ref List<Fork> forks, ref Stopwatch stopwatch, double timeThinking = 0.01, double timeEating = 0.1)
         {
@@ -23,7 +26,15 @@ namespace JantarDosFilosofos.Classes
             this.timeThinking = Convert.ToInt32(timeThinking * 1000);
             this.timeEating = Convert.ToInt32(timeEating * 1000);
             this.forksInHand = new List<Fork>();
+            this.hungry = false;
+            this.abortSimulation = false;
+            this.lastTimeHungry = 0;
             _stopwatch = stopwatch;
+        }
+
+        public void AbortSimulation()
+        {
+            abortSimulation = true;
         }
 
         private void Log(string str)
@@ -41,9 +52,14 @@ namespace JantarDosFilosofos.Classes
             }
             while (true)
             {
+                if (abortSimulation)
+                    return;
                 if (!Eat())
                 {
-                    Hungry();
+                    if(!Hungry())
+                    {
+                        return;
+                    }
                 }
                 else
                 {
@@ -95,10 +111,17 @@ namespace JantarDosFilosofos.Classes
         {
             Log($"was not able to eat and DIED");
         }
+
+        public bool IsHungry()
+        {
+            return hungry;
+        }
         
-        public void Hungry()
+        public bool Hungry()
         {
             Log($"is hungry and waiting for forks");
+            lastTimeHungry = _stopwatch.ElapsedMilliseconds;
+            hungry = true;
             Stopwatch timeHungry = new Stopwatch();
             timeHungry.Start();
             while (true)
@@ -109,7 +132,12 @@ namespace JantarDosFilosofos.Classes
                     {
                         Log($"got fork {forks[i].GetId()}");
                         forksInHand.Add(forks[i]);
-                        return;
+                        hungry = false;
+                        return true;
+                    }
+                    else if (abortSimulation)
+                    {
+                        return false;
                     }
                 }
             }
